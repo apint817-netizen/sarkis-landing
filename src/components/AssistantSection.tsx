@@ -1,3 +1,4 @@
+// src/components/AssistantSection.tsx
 import React, { useState } from "react";
 
 type Message = {
@@ -8,7 +9,8 @@ type Message = {
 const SYSTEM_PROMPT =
   "You are an AI assistant for Sarkis, an AI expert & full-stack developer. " +
   "Help visitors understand his services (bots, web apps, AI agents, generators) " +
-  "and suggest how he can solve their tasks. Answer briefly, clearly and friendly.";
+  "and suggest how he can solve their tasks. Answer briefly, clearly and friendly. " +
+  "If the user writes in Russian, answer in Russian. If in English, answer in English.";
 
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
@@ -17,15 +19,24 @@ export default function AssistantSection() {
     {
       role: "assistant",
       content:
-        "Привет! Я AI-ассистент Саркиса. Могу подсказать, какой бот, агент или сервис подойдёт под твою задачу — просто опиши её в паре предложений.",
+        "Привет! Я AI-ассистент Саркиса. Опиши свою задачу — подскажу, какой бот, агент или сервис можно сделать под неё.",
     },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY as string | undefined;
+
   const handleSend = async () => {
     if (!input.trim() || loading) return;
+
+    if (!apiKey) {
+      setError(
+        "AI ещё не настроен: отсутствует VITE_OPENROUTER_API_KEY. Добавь ключ в .env и пересобери проект."
+      );
+      return;
+    }
 
     const userMessage: Message = { role: "user", content: input.trim() };
     const newMessages = [...messages, userMessage];
@@ -40,12 +51,13 @@ export default function AssistantSection() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
           "HTTP-Referer": "https://apint817-netizen.github.io/sarkis-landing/",
           "X-Title": "Sarkis AI Assistant",
         },
         body: JSON.stringify({
-          model: "meta-llama/Meta-Llama-3.1-8B-Instruct:free", // бесплатная модель
+          // более стабильная бесплатная модель
+          model: "google/gemma-2-9b-it:free",
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
             ...newMessages.map((m) => ({
@@ -57,16 +69,27 @@ export default function AssistantSection() {
       });
 
       if (!res.ok) {
-        throw new Error(`API error: ${res.status}`);
+        let detail = "";
+        try {
+          const text = await res.text();
+          detail = text.slice(0, 200);
+        } catch {
+          /* ignore */
+        }
+        throw new Error(`API error ${res.status}. ${detail}`);
       }
 
       const data = await res.json();
-      const reply = data.choices?.[0]?.message?.content ?? "Нет ответа от модели.";
+      const reply: string =
+        data.choices?.[0]?.message?.content ?? "Модель не вернула ответа.";
 
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     } catch (e: any) {
       console.error(e);
-      setError("Не удалось получить ответ от AI. Попробуй ещё раз позже.");
+      setError(
+        "Не удалось получить ответ от AI. Попробуй ещё раз позже. " +
+          (e?.message ? `\nТех. деталь: ${e.message}` : "")
+      );
     } finally {
       setLoading(false);
     }
@@ -92,7 +115,7 @@ export default function AssistantSection() {
           <ul className="text-xs md:text-sm text-white/60 space-y-1">
             <li>• Помогает выбрать формат решения под твой бизнес.</li>
             <li>• Может подсказать, как внедрить AI в текущие процессы.</li>
-            <li>• На русском и английском, контекст — про услуги Саркиса.</li>
+            <li>• Понимает русский и английский, контекст — про услуги Саркиса.</li>
           </ul>
         </div>
 
@@ -103,7 +126,7 @@ export default function AssistantSection() {
               {messages.map((m, idx) => (
                 <div
                   key={idx}
-                  className={`max-w-[85%] rounded-2xl px-3 py-2 ${
+                  className={`max-w-[85%] rounded-2xl px-3 py-2 whitespace-pre-wrap ${
                     m.role === "user"
                       ? "ml-auto bg-accent text-white"
                       : "mr-auto bg-white/5 text-white/90 border border-white/10"
@@ -114,11 +137,13 @@ export default function AssistantSection() {
               ))}
               {loading && (
                 <div className="mr-auto text-xs text-white/60 italic">
-                  Ассистент думает...
+                  Ассистент думает…
                 </div>
               )}
               {error && (
-                <div className="mr-auto text-xs text-red-400">{error}</div>
+                <div className="mr-auto text-xs text-red-400 whitespace-pre-wrap">
+                  {error}
+                </div>
               )}
             </div>
 
@@ -137,13 +162,13 @@ export default function AssistantSection() {
                 disabled={loading || !input.trim()}
                 className="btn-primary text-xs px-3 py-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Отправить
+                {loading ? "Отправка..." : "Отправить"}
               </button>
             </div>
           </div>
           <p className="mt-2 text-[11px] text-white/40">
-            ⚠ Лимит бесплатных запросов OpenRouter, поэтому ассистент может
-            иногда отвечать с задержкой или выдавать ошибку.
+            ⚠ Ассистент использует бесплатный API OpenRouter. При высокой
+            нагрузке сервис может временно отвечать с ошибками.
           </p>
         </div>
       </div>
