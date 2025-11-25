@@ -85,7 +85,7 @@ export default function Hero({ hero, telegramLink }: Props) {
             {/* Фото */}
             <div className="aspect-[3/4] w-full">
               <img
-                src="/sarkis-portrait.jpg"
+                src="./sarkis-portrait.jpg"
                 alt={`${hero.photo.name} — ${hero.photo.role}`}
                 className="h-full w-full object-cover"
               />
