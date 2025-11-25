@@ -1,6 +1,6 @@
 {
   "name": "sarkis-ai-landing",
-  "homepage": "https://sarkis-ai.github.io/sarkis-landing"
+  "homepage": "https://sarkis-ai.github.io/sarkis-landing",
   "private": true,
   "version": "0.0.1",
   "type": "module",
