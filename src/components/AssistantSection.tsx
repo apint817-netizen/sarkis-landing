@@ -12,28 +12,35 @@ type AssistantSectionProps = {
 };
 
 const SYSTEM_PROMPT = `
-You are the landing page AI assistant for Sarkis, an AI expert & full-stack developer.
+Ты — AI-ассистент на сайте Саркиса, эксперта по AI и full-stack разработчика.  
+Твоя задача — быстро понять, что человеку нужно, и предложить понятный формат решения: AI-бот, агент, генератор, мини-панель или консультация.
 
-Goals:
-1) Understand the visitor’s situation and task in simple terms.
-2) Map their task to 1–3 suitable solution formats from:
-   – AI bot (WhatsApp / Telegram),
-   – AI agent or generator,
-   – web app or dashboard,
-   – AI strategy / consulting session.
-3) Explain in practical language how this solution would work in their case and what it will automate or improve.
-4) Suggest the next step (for example: describe what information Sarkis would need from them, or suggest writing to him on Telegram: https://t.me/sarkis_20032).
+Главные правила:
+1) Говори простым, человеческим языком — без техничных терминов, если их не спрашивают.
+2) Не используй канцелярит, длинные фразы и "водяные" объяснения.
+3) Если задача неясная — задай 1–2 уточняющих вопроса.
+4) Предлагай 1–2 конкретных варианта решения под задачу: бот, агент, генератор, веб-сервис.
+5) Объясняй ценность: что автоматизирует, как ускорит работу, что даст в деньгах или времени.
+6) Дай мини-план из 3–4 шагов: что делать дальше.
+7) Ненавязчиво предложи написать Саркису в Telegram, если человек хочет двигаться дальше: https://t.me/sarkis_20032.
+8) Общайся уверенно, дружелюбно и по-деловому.
 
-Style:
-- Be brief, clear and friendly.
-- Prefer structured answers: short paragraphs or bullet lists.
-- Avoid jargon unless the user is clearly technical.
-- Do NOT mention that you are an AI model or talk about your limitations unless directly asked.
+Формат ответа:
+— Короткое понимание сути задачи.  
+— Вариант решения (или два).  
+— Как это будет работать именно у человека.  
+— Мини-план (3–4 пункта).  
+— Мягкое предложение продолжить общение.  
 
-Language:
-- If the user writes in Russian, answer in Russian.
-- If the user writes in English, answer in English.
-- Mirror the user’s tone: practical and business-oriented.
+Язык:
+— Если пользователь пишет по-русски — отвечай по-русски.  
+— Если по-английски — отвечай на английском.  
+
+Запрещено:
+— писать как “AI-модель”,  
+— упоминать свои ограничения,  
+— давать объёмные технические лекции,  
+— употреблять сложные термины без необходимости.
 `;
 
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
@@ -51,6 +58,7 @@ export default function AssistantSection({ lang }: AssistantSectionProps) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false); // свернуто / развернуто
 
   const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY as
     | string
@@ -69,8 +77,10 @@ export default function AssistantSection({ lang }: AssistantSectionProps) {
     ]);
     setError(null);
     setInput("");
+    // при смене языка оставляем состояние expanded как есть
   }, [t.initialMessage]);
 
+  // автопрокрутка вниз
   useEffect(() => {
     const el = messagesContainerRef.current;
     if (el) {
@@ -81,11 +91,16 @@ export default function AssistantSection({ lang }: AssistantSectionProps) {
   const handleSend = async () => {
     if (!input.trim() || loading) return;
 
+    // при первом реальном взаимодействии — раскрываем чат
+    if (!expanded) {
+      setExpanded(true);
+    }
+
     if (!apiKey) {
       setError(
         lang === "ru"
-          ? "AI ещё не настроен: отсутствует VITE_OPENROUTER_API_KEY. Добавь ключ в .env и перезапусти npm run dev."
-          : "AI is not configured yet: VITE_OPENROUTER_API_KEY is missing. Add the key to .env and restart npm run dev."
+          ? "AI ещё не настроен: отсутствует VITE_OPENROUTER_API_KEY."
+          : "AI is not configured: VITE_OPENROUTER_API_KEY is missing."
       );
       return;
     }
@@ -94,8 +109,8 @@ export default function AssistantSection({ lang }: AssistantSectionProps) {
     if (!modelId) {
       setError(
         lang === "ru"
-          ? "Не указана модель: добавь VITE_OPENROUTER_MODEL в .env с реальным ID модели из OpenRouter."
-          : "Model is not set: add VITE_OPENROUTER_MODEL to .env with a valid model ID from OpenRouter."
+          ? "Не указана модель: добавь VITE_OPENROUTER_MODEL в .env."
+          : "Model is not set: add VITE_OPENROUTER_MODEL to .env."
       );
       return;
     }
@@ -114,7 +129,8 @@ export default function AssistantSection({ lang }: AssistantSectionProps) {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${apiKey}`,
-          "HTTP-Referer": "https://apint817-netizen.github.io/sarkis-landing/",
+          "HTTP-Referer":
+            "https://apint817-netizen.github.io/sarkis-landing/",
           "X-Title": "Sarkis AI Landing Assistant",
         },
         body: JSON.stringify({
@@ -206,6 +222,15 @@ export default function AssistantSection({ lang }: AssistantSectionProps) {
     );
   };
 
+  const toggleLabel =
+    lang === "ru"
+      ? expanded
+        ? "Свернуть диалог"
+        : "Развернуть диалог"
+      : expanded
+      ? "Collapse chat"
+      : "Expand chat";
+
   return (
     <section id="assistant" className="section-container pt-8 md:pt-16">
       <div className="flex flex-col md:flex-row md:items-start gap-8">
@@ -223,7 +248,21 @@ export default function AssistantSection({ lang }: AssistantSectionProps) {
 
         {/* Правая колонка — чат */}
         <div className="md:w-2/3">
-          <div className="rounded-2xl border border-white/10 bg-darkSoft/80 backdrop-blur-md shadow-soft flex flex-col h-[420px]">
+          <div className="mb-2 flex justify-end">
+            <button
+              type="button"
+              onClick={() => setExpanded((prev) => !prev)}
+              className="text-[11px] px-2 py-1 rounded-full border border-white/15 text-white/70 hover:text-white hover:border-white/40 transition"
+            >
+              {toggleLabel}
+            </button>
+          </div>
+
+          <div
+            className={`rounded-2xl border border-white/10 bg-darkSoft/80 backdrop-blur-md shadow-soft flex flex-col transition-all duration-300 ease-out ${
+              expanded ? "h-[420px]" : "h-[170px]"
+            }`}
+          >
             {/* Сообщения */}
             <div
               ref={messagesContainerRef}
@@ -251,6 +290,9 @@ export default function AssistantSection({ lang }: AssistantSectionProps) {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
+                onFocus={() => {
+                  if (!expanded) setExpanded(true);
+                }}
               />
               <button
                 onClick={handleSend}
