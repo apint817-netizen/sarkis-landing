@@ -2,8 +2,8 @@ name: Deploy Vite site to GitHub Pages
 
 on:
   push:
-    branches: [ main ]   # деплой из main
-  workflow_dispatch:      # возможность запустить руками
+    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,6 +17,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,6 +27,13 @@ jobs:
         with:
           node-version: 20
           cache: npm
+
+      # 🔥 СОЗДАЁМ .env ИЗ СЕКРЕТОВ
+      - name: Create .env from GitHub Secrets
+        run: |
+          echo "VITE_OPENROUTER_API_KEY=${{ secrets.VITE_OPENROUTER_API_KEY }}" >> .env
+          echo "VITE_OPENROUTER_MODEL=${{ secrets.VITE_OPENROUTER_MODEL }}" >> .env
+          cat .env
 
       - name: Install deps
         run: npm install
