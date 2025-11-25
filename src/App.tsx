@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Lang, texts } from "./i18n";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -14,7 +14,21 @@ import AssistantSection from "./components/AssistantSection";
 const TELEGRAM_LINK = "https://t.me/sarkis_20032";
 
 export default function App() {
-  const [lang, setLang] = useState<Lang>("ru");
+  // читаем язык из localStorage, по умолчанию ru
+  const [lang, setLang] = useState<Lang>(() => {
+    const stored = (typeof window !== "undefined"
+      ? localStorage.getItem("lang")
+      : null) as Lang | null;
+    return stored || "ru";
+  });
+
+  // сохраняем язык при смене
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("lang", lang);
+    }
+  }, [lang]);
+
   const t = texts[lang];
 
   return (
@@ -42,10 +56,8 @@ export default function App() {
           <Process process={t.process} />
         </section>
 
-        {/* === НОВЫЙ БЛОК: AI-асcистент === */}
-        <section id="assistant" className="py-8 md:py-12">
-          <AssistantSection />
-        </section>
+        {/* === Блок AI-ассистента === */}
+        <AssistantSection lang={lang} />
 
         <section id="contact" className="py-10 md:py-16">
           <CTASection cta={t.cta} telegramLink={TELEGRAM_LINK} />

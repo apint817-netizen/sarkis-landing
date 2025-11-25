@@ -23,10 +23,7 @@ export const texts = {
         role: "AI-эксперт и разработчик · боты, сайты, агенты",
         online: "В сети"
       },
-      badges: [
-        "Боты · AI-агенты · Генераторы",
-        "React · Node.js · LLM"
-      ]
+      badges: ["Боты · AI-агенты · Генераторы", "React · Node.js · LLM"]
     },
     about: {
       title: "Кто такой Саркис",
@@ -107,6 +104,25 @@ export const texts = {
         }
       ]
     },
+    assistant: {
+      title: "AI-ассистент на сайте",
+      subtitle:
+        "Здесь можно вживую поговорить с AI-ассистентом Саркиса: описать задачу и получить идею решения — бот, агент, сервис или генератор.",
+      bullets: [
+        "Помогает выбрать формат решения под твой бизнес.",
+        "Подсказывает, как внедрить AI в текущие процессы.",
+        "Понимает русский и английский, держит контекст про твои услуги."
+      ],
+      modelLabel: "Текущая модель:",
+      thinking: "Ассистент думает…",
+      inputPlaceholder: "Опиши задачу или задай вопрос...",
+      send: "Отправить",
+      sending: "Отправка...",
+      warning:
+        "⚠ Ассистент использует API OpenRouter. Убедись, что в .env заданы VITE_OPENROUTER_API_KEY и VITE_OPENROUTER_MODEL.",
+      initialMessage:
+        "Привет! Я AI-ассистент Саркиса. Опиши свою задачу — подскажу, какой бот, агент или сервис под неё подойдёт."
+    },
     cta: {
       title: "Есть идея или задача под AI?",
       subtitle:
@@ -160,10 +176,7 @@ export const texts = {
         role: "AI expert & developer · bots, web apps, agents",
         online: "Online"
       },
-      badges: [
-        "Bots · AI agents · Generators",
-        "React · Node.js · LLM"
-      ]
+      badges: ["Bots · AI agents · Generators", "React · Node.js · LLM"]
     },
     about: {
       title: "Who is Sarkis",
@@ -243,6 +256,25 @@ export const texts = {
           desc: "Improve flows, add features, optimize cost and speed."
         }
       ]
+    },
+    assistant: {
+      title: "AI assistant on the site",
+      subtitle:
+        "Here you can talk live with Sarkis’s AI assistant: describe your task and get an idea for a bot, agent, service or generator.",
+      bullets: [
+        "Helps you choose the right format for your business.",
+        "Suggests how to plug AI into your existing workflows.",
+        "Understands Russian and English and knows Sarkis’s services."
+      ],
+      modelLabel: "Current model:",
+      thinking: "Assistant is thinking…",
+      inputPlaceholder: "Describe your task or ask a question...",
+      send: "Send",
+      sending: "Sending...",
+      warning:
+        "⚠ The assistant uses the OpenRouter API. Make sure VITE_OPENROUTER_API_KEY and VITE_OPENROUTER_MODEL are set in .env.",
+      initialMessage:
+        "Hi! I’m Sarkis’s AI assistant. Describe your task — I’ll suggest what bot, agent or service fits it best."
     },
     cta: {
       title: "Got an idea or AI use case?",
