@@ -9,6 +9,7 @@ import Process from "./components/Process";
 import CTASection from "./components/CTASection";
 import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
+import AssistantSection from "./components/AssistantSection";
 
 const TELEGRAM_LINK = "https://t.me/sarkis_20032";
 
@@ -18,11 +19,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-dark text-white hero-gradient">
-      <Navbar
-        lang={lang}
-        setLang={setLang}
-        nav={t.nav}
-      />
+      <Navbar lang={lang} setLang={setLang} nav={t.nav} />
 
       <main>
         <section id="hero" className="pt-6 md:pt-10 pb-10 md:pb-16">
@@ -43,6 +40,11 @@ export default function App() {
 
         <section id="process" className="py-8 md:py-12">
           <Process process={t.process} />
+        </section>
+
+        {/* === НОВЫЙ БЛОК: AI-асcистент === */}
+        <section id="assistant" className="py-8 md:py-12">
+          <AssistantSection />
         </section>
 
         <section id="contact" className="py-10 md:py-16">

@@ -8,7 +8,8 @@ export const texts = {
       skills: "Стек",
       process: "Как я работаю",
       faq: "FAQ",
-      contact: "Контакты"
+      contact: "Контакты",
+      assistant: "AI-ассистент"
     },
     hero: {
       badge: "AI-эксперт и full-stack разработчик",
@@ -144,7 +145,8 @@ export const texts = {
       skills: "Stack",
       process: "Process",
       faq: "FAQ",
-      contact: "Contact"
+      contact: "Contact",
+      assistant: "AI assistant"
     },
     hero: {
       badge: "AI expert & full-stack developer",
