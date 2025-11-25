@@ -219,13 +219,6 @@ export default function AssistantSection({ lang }: AssistantSectionProps) {
               <li key={i}>• {item}</li>
             ))}
           </ul>
-
-          <p className="text-[11px] text-white/40 pt-2">
-            {t.modelLabel}{" "}
-            <span className="font-mono break-all">
-              {import.meta.env.VITE_OPENROUTER_MODEL || MODEL_ID}
-            </span>
-          </p>
         </div>
 
         {/* Правая колонка — чат */}
@@ -268,7 +261,6 @@ export default function AssistantSection({ lang }: AssistantSectionProps) {
               </button>
             </div>
           </div>
-          <p className="mt-2 text-[11px] text-white/40">{t.warning}</p>
         </div>
       </div>
     </section>
