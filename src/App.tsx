@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Lang, texts } from "./i18n";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -18,11 +18,26 @@ export default function App() {
   const [lang, setLang] = useState<Lang>("ru");
   const t = texts[lang];
 
+  // Флаг готовности для анимации
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    // через кадр после маунта включаем анимацию
+    const id = requestAnimationFrame(() => setReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
   return (
     <div className="min-h-screen bg-dark text-white hero-gradient">
       <Navbar lang={lang} setLang={setLang} nav={t.nav} />
 
-      <main>
+      {/* ВЕСЬ контент страницы плавно выезжает */}
+      <main
+        className={
+          "transition-all duration-600 ease-out transform " +
+          (ready ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4")
+        }
+      >
         <section id="hero" className="pt-6 md:pt-10 pb-10 md:pb-16">
           <Hero hero={t.hero} telegramLink={TELEGRAM_LINK} />
         </section>
@@ -43,12 +58,10 @@ export default function App() {
           <Process process={t.process} />
         </section>
 
-        {/* 🔥 Новый блок: отзывы */}
         <section id="testimonials" className="py-8 md:py-12">
           <Testimonials testimonials={t.testimonials} />
         </section>
 
-        {/* Блок AI-ассистента */}
         <section id="assistant" className="py-8 md:py-12">
           <AssistantSection lang={lang} />
         </section>

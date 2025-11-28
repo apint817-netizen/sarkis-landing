@@ -35,17 +35,16 @@ export default function Navbar({ lang, setLang, nav }: Props) {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // 🔥 Локализованное имя
+  // Локализованное имя
   const displayName = lang === "ru" ? "Саркис" : "Sarkis";
 
-  // 🔥 Локализованная подпись под именем
+  // Локализованная подпись под именем
   const roleText =
     lang === "ru" ? "AI-эксперт и разработчик" : "AI expert & dev";
 
   return (
     <header className="sticky top-0 z-20 bg-dark/80 backdrop-blur border-b border-white/5">
       <div className="section-container flex items-center justify-between py-3 md:py-4">
-
         {/* Аватар + имя */}
         <div
           className="flex items-center gap-2 cursor-pointer"
@@ -68,7 +67,6 @@ export default function Navbar({ lang, setLang, nav }: Props) {
             <span className="text-sm md:text-base font-semibold">
               {displayName}
             </span>
-
             <span className="text-[11px] md:text-xs text-white/60">
               {roleText}
             </span>
